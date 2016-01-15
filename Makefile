@@ -16,7 +16,7 @@ BUILD_DATE = \"$(shell date -u)\"
 BUILD_SHORT_DATE = \"$(shell date -u +%D)\"
 BUILD_HOST = \"$(shell hostname)\"
 BUILD_USER = \"$(shell whoami)\"
-BUILD_CL = \"$(shell git log -n 1 --format="%cN %ci %D %t")\"
+BUILD_CL = \"$(shell git log -n 1 --format="%cN %ci %t")\"
 
 CFLAGS := -Wall -Os -m32 -nostdlib
 
