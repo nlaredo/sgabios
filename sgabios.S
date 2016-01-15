@@ -15,7 +15,9 @@
  */
 
 #include "sgabios.h"
-#define BUILD_CL  "$Id$"
+
+/* 65536 loops is about half a second, generous for remote consoles */
+#define SERIAL_POLL_TIMEOUT 655360
 
 .code16
 .text
@@ -713,13 +715,13 @@ get_serial_lsr:
   inb %dx, %al
   cmpb $0xff, %al
   ret
-  
+
 /*
  * get_byte
  *
  * get serial byte in %al, scancode in %ah [FIXME: EFI console input]
  *
- * all registers except %ax preserved
+ * all registers except %ax and flags preserved, zf set on fail
  *
  */
 
@@ -762,7 +764,7 @@ get_byte_tail:
  * poll_byte
  *
  * get serial byte in %al, scancode in %ah [FIXME: EFI console input]
- * retry up to 65536 times for an expected input byte
+ * retry up to SERIAL_POLL_TIMEOUT times for an expected input byte
  *
  * all registers except %ax preserved
  *
@@ -772,9 +774,13 @@ poll_byte:
   pushw %cx
   xorw %cx, %cx
 poll_byte_retry:
-  inb $0xed, %al
+  incl %ecx
+  cmpl $SERIAL_POLL_TIMEOUT, %ecx
+  jz poll_byte_exit
+  inb $0xed, %al  /* delay */
   call get_byte
-  loopz poll_byte_retry                /* repeat while zf set or cx != 0 */
+  jz poll_byte_retry
+poll_byte_exit:
   popw %cx
   ret
 

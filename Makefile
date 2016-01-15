@@ -11,13 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# $Id$
 
 BUILD_DATE = \"$(shell date -u)\"
 BUILD_SHORT_DATE = \"$(shell date -u +%D)\"
 BUILD_HOST = \"$(shell hostname)\"
 BUILD_USER = \"$(shell whoami)\"
+BUILD_CL = \"$(shell git log -n 1 --format="%cN %ci %D %t")\"
 
 CFLAGS := -Wall -Os -m32 -nostdlib
 
@@ -26,6 +25,7 @@ ASFLAGS += -DBUILD_DATE="$(BUILD_DATE)"
 ASFLAGS += -DBUILD_SHORT_DATE="$(BUILD_SHORT_DATE)"
 ASFLAGS += -DBUILD_HOST="$(BUILD_HOST)"
 ASFLAGS += -DBUILD_USER="$(BUILD_USER)"
+ASFLAGS += -DBUILD_CL="$(BUILD_CL)"
 
 LDSCRIPT := rom16.ld
 LDFLAGS := -T $(LDSCRIPT) -nostdlib
